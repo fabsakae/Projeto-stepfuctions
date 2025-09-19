@@ -1,6 +1,6 @@
 # Projeto-step functions
 Projeto para o Bootcamp CodeGirls DIO/SantanderOPenAcademy
-![Diagrama do Workflow](images/stepfunctionproject.png)
+
 ## O que é o AWS Step Functions?
 * Step Functions é um orquestrador de fluxos de trabalho serverless na AWS. Ele permite que você conecte e coordene diferentes serviços da nuvem (como funções Lambda, serviços de machine learning, etc.) de uma forma visual e sem precisar escrever código de orquestração complexo. O resultado é um fluxo de trabalho automatizado, robusto e escalável. O ponto-chave é que ele orquestra o que já existe, e não cria os serviços do zero. Ele conecta os microserviços e outros serviços da AWS que você já criou.
 
@@ -50,3 +50,6 @@ Após as tarefas em paralelo serem concluídas com sucesso, o fluxo finaliza com
 
 Para garantir a robustez, configurei a lógica de Catch. Se qualquer uma das etapas (Task ou Choice) falhasse, o fluxo não pararia. Em vez disso, ele seguiria para um estado de erro que logaria o problema no Amazon CloudWatch.
 * Todos os caminhos convergem para um End State (Fim).  Se um caminho do fluxo não tiver um estado final, a execução continuará rodando, o que pode gerar custos inesperados ou simplesmente não completar a tarefa.
+
+* ===
+* ![Diagrama do Workflow](images/stepfunctionproject.png)
