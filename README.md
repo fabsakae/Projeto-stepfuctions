@@ -31,24 +31,22 @@ Etapa 2: Tomar uma Decisão (Choice State)
 
 Após o redimensionamento, eu usaria um Choice State para verificar o tamanho da imagem redimensionada.
 
-Se o tamanho do arquivo for menor que um limite definido (ex: 50 KB), o fluxo segue para a próxima etapa.
+Se o tamanho do arquivo for menor que um limite definido ( 50 KB), o fluxo segue para a próxima etapa.
 
 Se for maior, isso poderia indicar um problema, e o fluxo iria para um caminho de erro para registrar o incidente.
 
 Etapa 3: Gerar uma Miniatura (Parallel State)
 
-Para economizar tempo, eu usaria um Parallel State para criar branches que executam duas tarefas ao mesmo tempo.
+Usei um Parallel State para criar branches que executam duas tarefas ao mesmo tempo.
 
 Branch 1: Gera uma miniatura (thumbnail) da imagem.
-
 Branch 2: Adiciona uma marca d'água (watermark) na imagem redimensionada.
 
 Etapa 4: Enviar uma Notificação (Task State)
 
-Após as tarefas em paralelo serem concluídas com sucesso, o fluxo finaliza com um Task State que envia uma notificação.
+Após as tarefas em paralelo serem concluídas com sucesso, o fluxo finaliza com um Task State que envia uma notificação para o Amazon SNS (Simple Notification Service) para enviar um e-mail confirmando que a imagem foi processada e está pronta para uso.
 
-Esse estado poderia usar o Amazon SNS (Simple Notification Service) para enviar um e-mail confirmando que a imagem foi processada e está pronta para uso.
+* Caminho de Erro (Catch):
 
-Caminho de Erro (Catch):
-
-Para garantir a robustez, configurei a lógica de Catch. Se qualquer uma das etapas (Task ou Choice) falhasse, o fluxo não pararia. Em vez disso, ele seguiria para um estado de erro que logaria o problema no Amazon CloudWatch e enviaria uma notificação de falha para o administrador.
+Para garantir a robustez, configurei a lógica de Catch. Se qualquer uma das etapas (Task ou Choice) falhasse, o fluxo não pararia. Em vez disso, ele seguiria para um estado de erro que logaria o problema no Amazon CloudWatch.
+* Todos os caminhos convergem para um End State (Fim).  Se um caminho do fluxo não tiver um estado final, a execução continuará rodando, o que pode gerar custos inesperados ou simplesmente não completar a tarefa.
