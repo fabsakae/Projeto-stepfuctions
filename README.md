@@ -50,6 +50,6 @@ Qualquer falha em uma Task (Lambda) → redireciona para Lambda de logging/erros
 Para garantir a robustez, configurei a lógica de Catch. Se qualquer uma das etapas (Task ou Choice) falhasse, o fluxo não pararia. Em vez disso, ele seguiria para um estado de erro que logaria o problema no Amazon CloudWatch.
 
 Etapa 6: Todos os caminhos convergem para um End State (Fim).  Se um caminho do fluxo não tiver um estado final, a execução continuará rodando, o que pode gerar custos inesperados ou simplesmente não completar a tarefa.
----
+
   
  ![Diagrama do Workflow](images/stepfunctionproject2.jpg)
