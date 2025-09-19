@@ -29,27 +29,27 @@ Essa função Lambda seria responsável por pegar a imagem do S3, redimensioná-
 
 Etapa 2: Tomar uma Decisão (Choice State)
 
-Após o redimensionamento, eu usaria um Choice State para verificar o tamanho da imagem redimensionada.
+Se < 50kb → segue para processamento avançado.
 
-Se o tamanho do arquivo for menor que um limite definido ( 50 KB), o fluxo segue para a próxima etapa.
-
-Se for maior, isso poderia indicar um problema, e o fluxo iria para um caminho de erro para registrar o incidente.
+Se >= 50kb → Lambda de Erro → registra log no CloudWatch + envia SNS de falha.
 
 Etapa 3: Gerar uma Miniatura (Parallel State)
-
 Usei um Parallel State para criar branches que executam duas tarefas ao mesmo tempo.
 
-Branch 1: Gera uma miniatura (thumbnail) da imagem.
-Branch 2: Adiciona uma marca d'água (watermark) na imagem redimensionada.
+Branch 1 (Lambda 2): Gera uma miniatura (thumbnail) da imagem.
+Branch 2 (Lambda 3): Adiciona uma marca d'água (watermark) na imagem redimensionada.
 
-Etapa 4: Enviar uma Notificação (Task State)
+Etapa 4 (Lambda 4): Enviar uma Notificação de sucesso (Task State).
+Quando os dois branches terminam, chama uma Lambda que envia SNS confirmando sucesso.
 
 Após as tarefas em paralelo serem concluídas com sucesso, o fluxo finaliza com um Task State que envia uma notificação para o Amazon SNS (Simple Notification Service) para enviar um e-mail confirmando que a imagem foi processada e está pronta para uso.
 
-* Caminho de Erro (Catch):
+Etapa 5:  Caminho de Erro (Catch):
+Qualquer falha em uma Task (Lambda) → redireciona para Lambda de logging/erros, que manda log para CloudWatch e SNS de falha.
 
 Para garantir a robustez, configurei a lógica de Catch. Se qualquer uma das etapas (Task ou Choice) falhasse, o fluxo não pararia. Em vez disso, ele seguiria para um estado de erro que logaria o problema no Amazon CloudWatch.
-* Todos os caminhos convergem para um End State (Fim).  Se um caminho do fluxo não tiver um estado final, a execução continuará rodando, o que pode gerar custos inesperados ou simplesmente não completar a tarefa.
 
-* ===
-* ![Diagrama do Workflow](images/stepfunctionproject.png)
+Etapa 6: Todos os caminhos convergem para um End State (Fim).  Se um caminho do fluxo não tiver um estado final, a execução continuará rodando, o que pode gerar custos inesperados ou simplesmente não completar a tarefa.
+---
+  
+ ![Diagrama do Workflow](images/stepfunctionproject2.jpg)
